@@ -2,20 +2,17 @@ import requests
 from requests_html import HTMLSession
 import json
 
-URL = 'https://www.codecademy.com/login'
-PROFILE_URL = 'https://www.codecademy.com/profiles/me'
-SQL_URL = 'https://www.codecademy.com/learn/learn-sql'
-
 
 def login():
     login_session = HTMLSession()
+    login_url = 'https://www.codecademy.com/login'
     user_name = 'ajaxSolver08921'
     password = 'codecademy987'
 
-    login_page = login_session.get(URL)
+    login_page = login_session.get(login_url)
     authenticity_token = login_page.html.find('input[name=authenticity_token]', first=True).attrs['value']
     login_data = {'user[login]': user_name, 'user[password]': password, 'authenticity_token': authenticity_token}
-    login_session.post(URL, data=login_data)
+    login_session.post(login_url, data=login_data)
 
     return login_session
 
