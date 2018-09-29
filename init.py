@@ -10,7 +10,9 @@ def login(user_name, password):
 
     login_page = login_session.get(login_url)
     authenticity_token = login_page.html.find('input[name=authenticity_token]', first=True).attrs['value']
-    login_data = {'user[login]': user_name, 'user[password]': password, 'authenticity_token': authenticity_token}
+    login_data = {'user[login]': user_name,
+                  'user[password]': password,
+                  'authenticity_token': authenticity_token}
     login_session.post(login_url, data=login_data)
 
     return login_session
