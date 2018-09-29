@@ -20,19 +20,49 @@ def login():
     return login_session
 
 
-def check_course_completion():
-    login_session = login()
-    checking_courses = {
-        'learn-the-command-line': 'https://www.codecademy.com/learn/learn-the-command-line',
-        'learn-sql': 'https://www.codecademy.com/learn/learn-sql',
-    }
-    for name, url in checking_courses.items():
-        r_sql = login_session.get(url, cookies=login_session.cookies)
-        react_props = r_sql.html.find('.react-root', first=True).attrs['data-react-props']
-        react_props_json = json.loads(react_props)
-        debug_content(react_props_json, name+'.json', type='json')
+def get_check_course_list():
+    return [
+        {
+            'name': 'learn-sql',
+            'url': 'https://www.codecademy.com/learn/learn-sql',
+            'courses': [
+                'Manipulation',
+                'Queries',
+                'Aggregate Functions',
+            ]
+        },
+        {
+            'name': 'learn-java',
+            'url': 'https://www.codecademy.com/learn/learn-java',
+            'courses': [
+                'Introduction to Java',
+            ]
+        }
+    ]
 
-    print(json.dumps(react_props_json, indent=4))
+
+def run():
+    login_session = login()
+    checking_courses = get_check_course_list()
+
+    for course_item in checking_courses:
+        sub_course_list = course_item['courses']
+        course_data = get_course_data(login_session, course_item)
+        for sub_course in sub_course_list:
+            if is_subcourse_finished(sub_course, course_data['reduxData']['entities']):
+                print('Passed ' + sub_course)
+            else:
+                print('Failed ' + sub_course)
+
+
+def get_course_data(login_session, course_item):
+    course_url = course_item['url']
+    r_sql = login_session.get(course_url, cookies=login_session.cookies)
+    react_props = r_sql.html.find('.react-root', first=True).attrs['data-react-props']
+    react_props_json = json.loads(react_props)
+    # course_name = course_item['name']
+    # debug_content(react_props_json, course_name + '.json', type='json')
+    return react_props_json
 
 
 def debug_content(content, file, type='txt'):
@@ -43,4 +73,18 @@ def debug_content(content, file, type='txt'):
             f.write(content)
 
 
-check_course_completion()
+def is_subcourse_finished(sub_course, course_data):
+    course_id = get_subcourse_id(sub_course, course_data['contentItems']['byUuid'])
+    assert course_id != 0
+
+    return course_data['contentItemProgresses']['byId'][course_id]['completed'];
+
+
+def get_subcourse_id(sub_course_name, course_content_items):
+    for course_id, course_item in course_content_items.items():
+        if course_item['title'] == sub_course_name:
+            return course_id
+    return 0
+
+
+run()
