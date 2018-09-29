@@ -1,13 +1,12 @@
-import requests
-from requests_html import HTMLSession
+import csv
 import json
+from requests_html import HTMLSession
 
 
-def login():
+def login(user_name, password):
+    # TODO:validate if login failed
     login_session = HTMLSession()
     login_url = 'https://www.codecademy.com/login'
-    user_name = 'ajaxSolver08921'
-    password = 'codecademy987'
 
     login_page = login_session.get(login_url)
     authenticity_token = login_page.html.find('input[name=authenticity_token]', first=True).attrs['value']
@@ -36,20 +35,6 @@ def get_check_course_list():
             ]
         }
     ]
-
-
-def run():
-    login_session = login()
-    checking_courses = get_check_course_list()
-
-    for course_item in checking_courses:
-        sub_course_list = course_item['courses']
-        course_data = get_course_data(login_session, course_item)
-        for sub_course in sub_course_list:
-            if is_subcourse_finished(sub_course, course_data['reduxData']['entities']):
-                print('Passed ' + sub_course)
-            else:
-                print('Failed ' + sub_course)
 
 
 def get_course_data(login_session, course_item):
@@ -82,6 +67,37 @@ def get_subcourse_id(sub_course_name, course_content_items):
         if course_item['title'] == sub_course_name:
             return course_id
     return 0
+
+
+def get_user_list():
+    user_list = []
+    with open('./users.csv') as user_csv_file:
+        user_rows = csv.reader(user_csv_file, delimiter=',')
+        for row in user_rows:
+            # TODO:validate if each user has all information we need
+            user_list.append({
+                'ID': row[0],
+                'user_name': row[1],
+                'password': row[2],
+            })
+    return user_list
+
+
+def run():
+    user_list = get_user_list()
+    for user in user_list:
+        print('Checking User:' + user['ID'] + '===')
+        login_session = login(user['user_name'], user['password'])
+        checking_courses = get_check_course_list()
+
+        for course_item in checking_courses:
+            sub_course_list = course_item['courses']
+            course_data = get_course_data(login_session, course_item)
+            for sub_course in sub_course_list:
+                if is_subcourse_finished(sub_course, course_data['reduxData']['entities']):
+                    print('Passed ' + sub_course)
+                else:
+                    print('Failed ' + sub_course)
 
 
 run()
