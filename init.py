@@ -1,6 +1,7 @@
 import csv
 import json
 from requests_html import HTMLSession
+import time
 
 
 def login(user_name, password):
@@ -25,6 +26,7 @@ def login(user_name, password):
 
 def is_session_logged_in(login_session):
     login_cookies = login_session.cookies.get_dict()
+    # print(login_cookies)
 
     return 'remember_user_token' in login_cookies
 
@@ -110,6 +112,10 @@ def get_user_list():
 def run():
     user_list = get_user_list()
     for user in user_list:
+        user_progress = {
+            'completed': 0,
+            'total': 0
+        }
         print('Checking User:' + user['ID'] + '===')
         login_session = login(user['user_name'], user['password'])
         if login_session is False:
@@ -121,11 +127,16 @@ def run():
             sub_course_list = course_item['courses']
             course_data = get_course_data(login_session, course_item)
             for sub_course in sub_course_list:
+                user_progress['total'] += 1
                 if is_subcourse_finished(sub_course, course_data['reduxData']['entities']):
-                    # TODO:mark the completion
+                    user_progress['completed'] += 1
                     print('Passed ' + sub_course)
                 else:
                     print('Failed ' + sub_course)
+        user_score = str(user_progress['completed'] / user_progress['total'] * 100.0)
+
+        print('User Score:' + user_score)
+        debug_content('{0},{1}/n'.format(user['ID'], user_score), './completion_report.txt')
 
 
 run()
