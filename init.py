@@ -108,6 +108,7 @@ def run():
             course_data = get_course_data(login_session, course_item)
             for sub_course in sub_course_list:
                 if is_subcourse_finished(sub_course, course_data['reduxData']['entities']):
+                    # TODO:mark the completion
                     print('Passed ' + sub_course)
                 else:
                     print('Failed ' + sub_course)
