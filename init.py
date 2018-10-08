@@ -50,7 +50,7 @@ def get_course_data(login_session, course_item):
 
 
 def debug_content(content, file, type='txt'):
-    with open('./' + file, 'w+', encoding='utf8') as f:
+    with open('./' + file, 'a+', encoding='utf8') as f:
         if (type == 'json'):
             json.dump(content, f, indent=4)
         else:
@@ -75,13 +75,24 @@ def get_user_list():
     user_list = []
     with open('./users.csv') as user_csv_file:
         user_rows = csv.reader(user_csv_file, delimiter=',')
-        for row in user_rows:
-            # TODO:validate if each user has all information we need
-            user_list.append({
-                'ID': row[0],
-                'user_name': row[1],
-                'password': row[2],
-            })
+        for line, row in enumerate(user_rows):
+            try:
+                row = list(map(str.strip, row))
+                if len(row) != 3:
+                    raise ValueError(line, 'Not Enough Fields', row)
+
+                user_dict = {
+                    'ID': row[0],
+                    'user_name': row[1],
+                    'password': row[2],
+                }
+                user_list.append(user_dict)
+                print(user_dict)
+            except ValueError as err:
+                error_message = 'Line {0} {1}===>{2}\n'.format(err.args[0], err.args[1], ','.join(err.args[2]))
+
+                debug_content(error_message, './error_users.txt')
+                pass
     return user_list
 
 
