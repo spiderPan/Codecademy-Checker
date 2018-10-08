@@ -4,7 +4,6 @@ from requests_html import HTMLSession
 
 
 def login(user_name, password):
-    # TODO:validate if login failed
     login_session = HTMLSession()
     login_url = 'https://www.codecademy.com/login'
 
@@ -15,7 +14,19 @@ def login(user_name, password):
                   'authenticity_token': authenticity_token}
     login_session.post(login_url, data=login_data)
 
+    if not is_session_logged_in(login_session):
+        error_message = 'Login failed for {0}===>{1}\n'.format(user_name, password)
+
+        debug_content(error_message, './error_users.txt')
+        return False
+
     return login_session
+
+
+def is_session_logged_in(login_session):
+    login_cookies = login_session.cookies.get_dict()
+
+    return 'remember_user_token' in login_cookies
 
 
 def get_check_course_list():
@@ -87,7 +98,7 @@ def get_user_list():
                     'password': row[2],
                 }
                 user_list.append(user_dict)
-                print(user_dict)
+                # print(user_dict)
             except ValueError as err:
                 error_message = 'Line {0} {1}===>{2}\n'.format(err.args[0], err.args[1], ','.join(err.args[2]))
 
@@ -101,6 +112,9 @@ def run():
     for user in user_list:
         print('Checking User:' + user['ID'] + '===')
         login_session = login(user['user_name'], user['password'])
+        if login_session is False:
+            continue
+
         checking_courses = get_check_course_list()
 
         for course_item in checking_courses:
