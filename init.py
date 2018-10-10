@@ -136,7 +136,7 @@ def run():
         user_score = str(user_progress['completed'] / user_progress['total'] * 100.0)
 
         print('User Score:' + user_score)
-        debug_content('{0},{1}/n'.format(user['ID'], user_score), './completion_report.txt')
+        debug_content('{0},{1}\n'.format(user['ID'], user_score), './completion_report.txt')
 
 
 run()
