@@ -57,5 +57,9 @@ What things you need to install the software and how to install them
 The project can be improved by the following fields
 
 ~~1. Report invalided user row in `users.csv`.~~
-2. Throw an exception when login with user's credential failed.
-3. Automatically marking completion by percentage
+
+~~2. Throw an exception when login with user's credential failed.~~
+
+~~3. Automatically marking completion by percentage~~
+
+1. Codecademy will enable ReCaptcha once login couple times, might need set up `sleep()` to avoid it.
