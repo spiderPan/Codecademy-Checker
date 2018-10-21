@@ -45,7 +45,7 @@ What things you need to install the software and how to install them
 
 2. Prepare all users' credentials in `users.csv` within the same folder. Each row will be format like
     ```bash
-    UserID, Username/Email, Password
+    UserID, LastName, FirstName, Username/Email, Password
     ```
     * The `UserID` is just for reference.
         

@@ -41,13 +41,6 @@ def get_check_course_list():
                 'Queries',
                 'Aggregate Functions',
             ]
-        },
-        {
-            'name': 'learn-java',
-            'url': 'https://www.codecademy.com/learn/learn-java',
-            'courses': [
-                'Introduction to Java',
-            ]
         }
     ]
 
@@ -74,7 +67,7 @@ def is_subcourse_finished(sub_course, course_data):
     course_id = get_subcourse_id(sub_course, course_data['contentItems']['byUuid'])
     assert course_id != 0
 
-    return course_data['contentItemProgresses']['byId'][course_id]['completed'];
+    return course_data['contentItemProgresses']['byId'][course_id]['completed']
 
 
 def get_subcourse_id(sub_course_name, course_content_items):
@@ -91,13 +84,13 @@ def get_user_list():
         for line, row in enumerate(user_rows):
             try:
                 row = list(map(str.strip, row))
-                if len(row) != 3:
+                if len(row) != 5:
                     raise ValueError(line, 'Not Enough Fields', row)
 
                 user_dict = {
                     'ID': row[0],
-                    'user_name': row[1],
-                    'password': row[2],
+                    'user_name': row[3],
+                    'password': row[4],
                 }
                 user_list.append(user_dict)
                 # print(user_dict)
